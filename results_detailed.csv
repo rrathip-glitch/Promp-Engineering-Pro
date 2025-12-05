@@ -1,0 +1,29 @@
+question_id,subject,condition,correct_answer,model_answer,is_correct,input_tokens,output_tokens,latency_sec,cost_usd
+3628,chemistry,baseline,D,D,1,231,4,2.699,0.003765
+3628,chemistry,scaffolded,D,D,1,284,4,2.043,0.004560
+9468,physics,baseline,B,B,1,156,381,10.719,0.030915
+9468,physics,scaffolded,B,B,1,209,4,20.847,0.003435
+8568,math,baseline,I,I,1,161,129,5.551,0.012090
+8568,math,scaffolded,I,I,1,214,4,1.158,0.003510
+4817,history,baseline,E,E,1,202,4,2.773,0.003330
+4817,history,scaffolded,E,E,1,255,4,3.435,0.004125
+7403,economics,baseline,B,B,1,208,4,2.342,0.003420
+7403,economics,scaffolded,B,B,1,261,4,2.679,0.004215
+6463,health,baseline,F,A,0,146,4,13.890,0.002490
+6463,health,scaffolded,F,A,0,199,4,3.547,0.003285
+11788,engineering,baseline,C,F,0,299,842,12.109,0.067635
+11788,engineering,scaffolded,C,B,0,352,4,3.091,0.005580
+5238,other,baseline,H,H,1,130,4,2.885,0.002250
+5238,other,scaffolded,H,H,1,183,4,3.458,0.003045
+2054,psychology,baseline,B,B,1,308,4,3.133,0.004920
+2054,psychology,scaffolded,B,B,1,361,4,3.094,0.005715
+1292,law,baseline,H,H,1,146,4,2.511,0.002490
+1292,law,scaffolded,H,H,1,199,4,2.241,0.003285
+10877,philosophy,baseline,E,E,1,132,4,3.505,0.002280
+10877,philosophy,scaffolded,E,I,0,186,4,2.634,0.003090
+10708,computer science,baseline,C,C,1,312,4,2.942,0.004980
+10708,computer science,scaffolded,C,C,1,365,4,2.471,0.005775
+300,business,baseline,H,H,1,299,4,2.271,0.004785
+300,business,scaffolded,H,H,1,352,4,4.796,0.005580
+3396,biology,baseline,D,D,1,284,4,4.849,0.004560
+3396,biology,scaffolded,D,D,1,337,4,3.107,0.005355

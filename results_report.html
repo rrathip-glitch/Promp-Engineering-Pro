@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMLU-Pro A/B Test Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #e0e0e0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .timestamp {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card.baseline {
+            border-left: 4px solid #3498db;
+        }
+        
+        .card.scaffolded {
+            border-left: 4px solid #9b59b6;
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+        
+        .accuracy {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .baseline .accuracy {
+            color: #3498db;
+        }
+        
+        .scaffolded .accuracy {
+            color: #9b59b6;
+        }
+        
+        .correct-count {
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .metric-label {
+            color: #888;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+        }
+        
+        .bar-container {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 10px 0 20px;
+            overflow: hidden;
+        }
+        
+        .bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .baseline .bar {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+        }
+        
+        .scaffolded .bar {
+            background: linear-gradient(90deg, #9b59b6, #8e44ad);
+        }
+        
+        .delta-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .delta-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+        
+        .delta-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .delta-value.positive {
+            color: #2ecc71;
+        }
+        
+        .delta-value.negative {
+            color: #e74c3c;
+        }
+        
+        .delta-label {
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .prompt-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .prompt-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+        
+        .prompt-text {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 600px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .accuracy {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MMLU-Pro A/B Test Results</h1>
+        <p class="timestamp">Generated: 2025-12-04 19:12:54</p>
+        
+        <div class="cards">
+            <div class="card baseline">
+                <div class="card-title">Baseline (No Scaffolding)</div>
+                <div class="accuracy">85.7%</div>
+                <div class="correct-count">12/14 correct</div>
+                <div class="bar-container">
+                    <div class="bar" style="width: 85.71428571428571%"></div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Total Cost</span>
+                    <span class="metric-value">$0.1499</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Cost per Correct</span>
+                    <span class="metric-value">$0.0125</span>
+                </div>
+            </div>
+            
+            <div class="card scaffolded">
+                <div class="card-title">Scaffolded</div>
+                <div class="accuracy">78.6%</div>
+                <div class="correct-count">11/14 correct</div>
+                <div class="bar-container">
+                    <div class="bar" style="width: 78.57142857142857%"></div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Total Cost</span>
+                    <span class="metric-value">$0.0606</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Cost per Correct</span>
+                    <span class="metric-value">$0.0055</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="delta-card">
+            <div class="delta-title">Accuracy Delta (Scaffolded vs Baseline)</div>
+            <div class="delta-value negative">-7.1%</div>
+            <div class="delta-label">Scaffolding reduced accuracy</div>
+        </div>
+        
+        <div class="prompt-card">
+            <div class="prompt-title">Scaffolding Prompt Used</div>
+            <div class="prompt-text">[Internal reasoning: Read carefully and expertly preempt likely errors. Note the key concept being tested. Use process of elimination.]
+
+IMPORTANT: Your response must be ONLY a single letter (A-J). No explanation. No other text.</div>
+        </div>
+    </div>
+</body>
+</html>

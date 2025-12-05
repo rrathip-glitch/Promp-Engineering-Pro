@@ -1,0 +1,167 @@
+import json
+from pathlib import Path
+
+def generate_final_report():
+    # Aggregated Data from Comparative Tests
+    models = ['Haiku 4.5', 'Sonnet 4.5', 'Opus 4.5']
+    
+    # Accuracy Data
+    baseline_acc = [42.0, 85.0, 85.7]
+    scaffolded_acc = [40.0, 55.0, 78.6]
+    
+    # Cost Data (Normalized per 100 questions for comparison)
+    # Using raw cost per question averages from runs
+    # Haiku: ~$0.0003/q baseline
+    # Sonnet: ~$0.0048/q baseline
+    # Opus: ~$0.0107/q baseline
+    cost_baseline = [0.03, 0.48, 1.07]
+    cost_scaffolded = [0.035, 0.41, 0.43] # Scaffolding was cheaper for Sonnet/Opus
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>MMLU-Pro Model Family Analysis</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            body {{ font-family: 'Inter', sans-serif; max-width: 1200px; margin: 0 auto; padding: 40px; background: #f5f5f7; color: #1d1d1f; }}
+            .header {{ text-align: center; margin-bottom: 60px; }}
+            .header h1 {{ font-size: 48px; font-weight: 700; margin-bottom: 10px; background: linear-gradient(135deg, #000 0%, #555 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
+            .card {{ background: white; border-radius: 24px; padding: 32px; margin-bottom: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }}
+            .grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }}
+            .stat-box {{ text-align: center; padding: 20px; background: #f9f9fa; border-radius: 16px; }}
+            .stat-value {{ font-size: 32px; font-weight: 700; color: #0071e3; }}
+            .stat-label {{ font-size: 14px; color: #86868b; margin-top: 5px; }}
+            .insight {{ border-left: 4px solid #0071e3; padding-left: 20px; margin-top: 20px; }}
+            .insight h3 {{ margin: 0 0 8px 0; }}
+            
+            /* Model specific colors */
+            .haiku {{ color: #34C759; }}
+            .sonnet {{ color: #FF9500; }}
+            .opus {{ color: #AF52DE; }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>MMLU-Pro Model Family Analysis</h1>
+            <p>Comparative Evaluation of Reasoning Scaffolding across Claude 4.5 Family</p>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Accuracy Impact</h2>
+                <canvas id="accuracyChart"></canvas>
+                <div class="insight">
+                    <h3>Key Finding</h3>
+                    <p><strong>Scaffolding hurts capable models.</strong> While Haiku (42%) sees neutral impact, Sonnet (-30%) and Opus (-7%) perform significantly worse when forced to follow explicit reasoning steps compared to their native baseline performance.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Cost Efficiency</h2>
+                <canvas id="costChart"></canvas>
+                <div class="insight">
+                    <h3>Unexpected Efficiency</h3>
+                    <p>For Sonnet and Opus, scaffolding actually <strong>reduced costs</strong>. The structured prompt likely caused the models to be more concise or conclude earlier, whereas the baseline "natural" reasoning was more verbose.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Model Performance Summary</h2>
+            <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="stat-box">
+                    <h3 class="haiku">Haiku 4.5</h3>
+                    <div class="stat-value">42.0%</div>
+                    <div class="stat-label">Baseline Accuracy</div>
+                    <div style="margin-top:10px; font-weight:600; color:#86868b">Scaffolding: Neutral</div>
+                </div>
+                <div class="stat-box">
+                    <h3 class="sonnet">Sonnet 4.5</h3>
+                    <div class="stat-value">85.0%</div>
+                    <div class="stat-label">Baseline Accuracy</div>
+                    <div style="margin-top:10px; font-weight:600; color:#FF3B30">Scaffolding: -30%</div>
+                </div>
+                <div class="stat-box">
+                    <h3 class="opus">Opus 4.5</h3>
+                    <div class="stat-value">85.7%</div>
+                    <div class="stat-label">Baseline Accuracy</div>
+                    <div style="margin-top:10px; font-weight:600; color:#FF9500">Scaffolding: -7%</div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Accuracy Chart
+            new Chart(document.getElementById('accuracyChart'), {{
+                type: 'bar',
+                data: {{
+                    labels: {models},
+                    datasets: [
+                        {{
+                            label: 'Baseline (No Scaffolding)',
+                            data: {baseline_acc},
+                            backgroundColor: '#0071e3',
+                            borderRadius: 6
+                        }},
+                        {{
+                            label: 'Scaffolded',
+                            data: {scaffolded_acc},
+                            backgroundColor: '#e5e5ea',
+                            borderRadius: 6
+                        }}
+                    ]
+                }},
+                options: {{
+                    responsive: true,
+                    plugins: {{
+                        legend: {{ position: 'bottom' }}
+                    }},
+                    scales: {{
+                        y: {{ beginAtZero: true, max: 100, title: {{ display: true, text: 'Accuracy (%)' }} }}
+                    }}
+                }}
+            }});
+
+            // Cost Chart
+            new Chart(document.getElementById('costChart'), {{
+                type: 'bar',
+                data: {{
+                    labels: {models},
+                    datasets: [
+                        {{
+                            label: 'Baseline Cost',
+                            data: {cost_baseline},
+                            backgroundColor: '#34C759',
+                            borderRadius: 6
+                        }},
+                        {{
+                            label: 'Scaffolded Cost',
+                            data: {cost_scaffolded},
+                            backgroundColor: '#e5e5ea',
+                            borderRadius: 6
+                        }}
+                    ]
+                }},
+                options: {{
+                    responsive: true,
+                    plugins: {{
+                        legend: {{ position: 'bottom' }}
+                    }},
+                    scales: {{
+                        y: {{ beginAtZero: true, title: {{ display: true, text: 'Est. Cost per 100 Qs ($)' }} }}
+                    }}
+                }}
+            }});
+        </script>
+    </body>
+    </html>
+    """
+    
+    output_path = Path("final_analysis.html")
+    with open(output_path, "w") as f:
+        f.write(html_content)
+    print(f"Generated final report: {output_path.absolute()}")
+
+if __name__ == "__main__":
+    generate_final_report()

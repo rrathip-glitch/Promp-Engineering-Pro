@@ -1,0 +1,4 @@
+{
+  "enabled": true,
+  "pre_prompt": "[Internal reasoning: Read carefully and expertly preempt likely errors. Note the key concept being tested. Use process of elimination.]\n\nIMPORTANT: Your response must be ONLY a single letter (A-J). No explanation. No other text."
+}
