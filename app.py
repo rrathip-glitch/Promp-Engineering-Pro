@@ -25,9 +25,7 @@ from pathlib import Path
 # Global variable for questions
 ALL_QUESTIONS = []
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Load data on startup in a separate thread to avoid blocking
+async def load_data_background():
     global ALL_QUESTIONS
     try:
         # Use relative path for deployment compatibility
@@ -40,6 +38,11 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to load data: {e}")
         ALL_QUESTIONS = []
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Start data loading in background task
+    task = asyncio.create_task(load_data_background())
     
     yield
     
