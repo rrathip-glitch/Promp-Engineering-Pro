@@ -28,7 +28,8 @@ from pathlib import Path
 
 # Load data once on startup
 try:
-    DATA_DIR = Path(os.path.expanduser("~/.gemini/antigravity/scratch/mmlu_pro_tester/MMLU-Pro/data"))
+    # Use relative path for deployment compatibility
+    DATA_DIR = Path(__file__).parent / "MMLU-Pro" / "data"
     logger.info(f"Loading data from {DATA_DIR}")
     ALL_QUESTIONS = load_mmlu_pro_data(DATA_DIR)
     logger.info(f"Loaded {len(ALL_QUESTIONS)} questions")
