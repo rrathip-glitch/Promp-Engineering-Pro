@@ -26,13 +26,15 @@ ALL_QUESTIONS = []
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load data on startup
+    # Load data on startup in a separate thread to avoid blocking
     global ALL_QUESTIONS
     try:
         # Use relative path for deployment compatibility
         DATA_DIR = Path(__file__).parent / "MMLU-Pro" / "data"
         logger.info(f"Loading data from {DATA_DIR}")
-        ALL_QUESTIONS = load_mmlu_pro_data(DATA_DIR)
+        
+        # Run data loading in a separate thread
+        ALL_QUESTIONS = await asyncio.to_thread(load_mmlu_pro_data, DATA_DIR)
         logger.info(f"Loaded {len(ALL_QUESTIONS)} questions")
     except Exception as e:
         logger.error(f"Failed to load data: {e}")
@@ -54,6 +56,11 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": f"Internal Server Error: {str(exc)}"},
     )
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Railway."""
+    return {"status": "ok", "questions_loaded": len(ALL_QUESTIONS)}
+
 class TestRequest(BaseModel):
     pre_prompt: str
     model: str
@@ -68,6 +75,9 @@ class TestResult(BaseModel):
 
 def get_stratified_sample(questions: List[Any], size: int = 14) -> List[Any]:
     """Get a stratified sample of questions (1 per subject if possible)."""
+    if not questions:
+        return []
+        
     subjects = {}
     for q in questions:
         # Handle both dict and Question object
