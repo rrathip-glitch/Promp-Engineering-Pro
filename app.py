@@ -20,6 +20,7 @@ from api_client import APIClient, extract_answer_with_llm_fallback
 from evaluator import run_single_test
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 # Global variable for questions
 ALL_QUESTIONS = []
