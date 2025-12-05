@@ -25,24 +25,21 @@ from pathlib import Path
 # Global variable for questions
 ALL_QUESTIONS = []
 
-async def load_data_background():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Load data on startup (Synchronous/Blocking for reliability)
     global ALL_QUESTIONS
     try:
         # Use relative path for deployment compatibility
         DATA_DIR = Path(__file__).parent / "MMLU-Pro" / "data"
         logger.info(f"Loading data from {DATA_DIR}")
         
-        # Run data loading in a separate thread
-        ALL_QUESTIONS = await asyncio.to_thread(load_mmlu_pro_data, DATA_DIR)
+        # Load directly (blocking) to ensure data is ready before serving
+        ALL_QUESTIONS = load_mmlu_pro_data(DATA_DIR)
         logger.info(f"Loaded {len(ALL_QUESTIONS)} questions")
     except Exception as e:
         logger.error(f"Failed to load data: {e}")
         ALL_QUESTIONS = []
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Start data loading in background task
-    task = asyncio.create_task(load_data_background())
     
     yield
     
