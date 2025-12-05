@@ -123,6 +123,8 @@ def get_stratified_sample(questions: List[Any], size: int = 14) -> List[Any]:
             
     return sample
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.get("/")
 async def read_root():
     return FileResponse("static/index.html")
