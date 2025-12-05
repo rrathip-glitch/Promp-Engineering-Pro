@@ -169,11 +169,12 @@ def load_mmlu_pro_data(data_dir: Union[Path, str]) -> List[Question]:
     for pattern in file_patterns:
         data_files.extend(data_dir.glob(pattern))
     
-    # Also check subdirectories
-    for subdir in data_dir.iterdir():
-        if subdir.is_dir():
-            for pattern in file_patterns:
-                data_files.extend(subdir.glob(pattern))
+    # Also check subdirectories if data_dir exists
+    if data_dir.exists():
+        for subdir in data_dir.iterdir():
+            if subdir.is_dir():
+                for pattern in file_patterns:
+                    data_files.extend(subdir.glob(pattern))
     
     if not data_files:
         raise FileNotFoundError(
