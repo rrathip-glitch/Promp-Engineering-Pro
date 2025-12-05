@@ -165,16 +165,20 @@ def load_mmlu_pro_data(data_dir: Union[Path, str]) -> List[Question]:
         "*.jsonl"
     ]
     
-    data_files = []
+    # Use a set to avoid duplicates from overlapping patterns
+    data_files = set()
     for pattern in file_patterns:
-        data_files.extend(data_dir.glob(pattern))
+        data_files.update(data_dir.glob(pattern))
     
     # Also check subdirectories if data_dir exists
     if data_dir.exists():
         for subdir in data_dir.iterdir():
             if subdir.is_dir():
                 for pattern in file_patterns:
-                    data_files.extend(subdir.glob(pattern))
+                    data_files.update(subdir.glob(pattern))
+    
+    # Convert back to sorted list for consistent order
+    data_files = sorted(list(data_files))
     
     if not data_files:
         raise FileNotFoundError(
