@@ -19,23 +19,31 @@ from data_loader import load_mmlu_pro_data
 from api_client import APIClient, extract_answer_with_llm_fallback
 from evaluator import run_single_test
 
-app = FastAPI(title="Prompt Engineering Pro")
+from contextlib import asynccontextmanager
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Global variable for questions
+ALL_QUESTIONS = []
 
-from pathlib import Path
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Load data on startup
+    global ALL_QUESTIONS
+    try:
+        # Use relative path for deployment compatibility
+        DATA_DIR = Path(__file__).parent / "MMLU-Pro" / "data"
+        logger.info(f"Loading data from {DATA_DIR}")
+        ALL_QUESTIONS = load_mmlu_pro_data(DATA_DIR)
+        logger.info(f"Loaded {len(ALL_QUESTIONS)} questions")
+    except Exception as e:
+        logger.error(f"Failed to load data: {e}")
+        ALL_QUESTIONS = []
+    
+    yield
+    
+    # Clean up on shutdown
+    ALL_QUESTIONS.clear()
 
-# Load data once on startup
-try:
-    # Use relative path for deployment compatibility
-    DATA_DIR = Path(__file__).parent / "MMLU-Pro" / "data"
-    logger.info(f"Loading data from {DATA_DIR}")
-    ALL_QUESTIONS = load_mmlu_pro_data(DATA_DIR)
-    logger.info(f"Loaded {len(ALL_QUESTIONS)} questions")
-except Exception as e:
-    logger.error(f"Failed to load data: {e}")
-    ALL_QUESTIONS = []
+app = FastAPI(title="Prompt Engineering Pro", lifespan=lifespan)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
